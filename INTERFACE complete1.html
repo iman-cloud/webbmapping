@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaterMe</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Full-screen video background */
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(60%);
+        }
+
+        /* Gradient blur effect on sides */
+        .gradient-left, .gradient-right {
+            position: fixed;
+            top: 0;
+            width: 25%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: -1;
+            filter: blur(12px);
+        }
+
+        .gradient-left {
+            left: 0;
+        }
+
+        .gradient-right {
+            right: 0;
+        }
+
+        /* Stylish header */
+        header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #00bcd4;
+            margin: 0;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            font-weight: 700;
+        }
+
+        header img {
+            height: 50px;
+        }
+
+        /* Navigation bar */
+        .top-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .top-nav button {
+            background: transparent;
+            border: 2px solid #00bcd4;
+            color: white;
+            font-size: 1.2em;
+            padding: 12px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .top-nav button:hover {
+            background-color: #00bcd4;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        /* Main button */
+        .info-button {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00bcd4;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.4em;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            animation: fadeInOut 5s ease-in-out infinite;
+            text-align: center;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .info-button:hover {
+            background: #0097a7;
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Scrolling images section */
+        .bottom-images {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            padding: 10px 0;
+            overflow-x: auto;
+        }
+
+        .scrolling-images {
+            display: flex;
+            gap: 20px;
+            animation: scrollImages 15s linear infinite;
+        }
+
+        .scrolling-images img {
+            width: 18%;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: pointer;
+        }
+
+        .scrolling-images img:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        @keyframes scrollImages {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Article modal */
+        .article {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 2;
+        }
+
+        .article h2 {
+            font-size: 1.8em;
+            color: #00bcd4;
+            margin-top: 0;
+            font-weight: bold;
+        }
+
+        .article p {
+            line-height: 1.8;
+        }
+
+        .article button {
+            background-color: #f44336;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .article button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* New "Read More" Button */
+        .read-more-button {
+            background-color: #00bcd4;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .read-more-button:hover {
+            background-color: #0097a7;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .info-button {
+                font-size: 1.1em;
+                padding: 15px 30px;
+            }
+
+            .top-nav button {
+                font-size: 1em;
+                padding: 10px 15px;
+            }
+
+            .scrolling-images img {
+                width: 25%;
+            }
+
+            .article {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full-screen background video -->
+    <video class="background-video" autoplay loop muted>
+        <source src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/Design%20sans%20titre.mp4" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture des vidéos.
+    </video>
+
+    <!-- Gradient blur effect on the sides -->
+    <div class="gradient-left"></div>
+    <div class="gradient-right"></div>
+
+    <!-- Main info button -->
+    <button class="info-button" id="infoButton">
+        Hydratez-vous avec nos infos sur l'eau en cliquant sur les images en bas 
+    </button>
+
+    <!-- Header and navigation -->
+<header>
+    <img src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/logomm.png" alt="Logo WaterMe">
+    <h1>WaterMe</h1>
+    <div class="top-nav">
+        <a href="https://code.earthengine.google.com/014b922adb374791ad55ee24ec9a67b7"><button>Carte</button></a>
+        <a href="DONATEPAGE.html"><button>Donate</button></a>
+        <a href="ABOUTPAGE.html"><button>À propos</button></a>
+        <a href="info.html"><button>Infos</button></a>
+    </div>
+</header>
+
+    <!-- Bottom scrolling images section -->
+    <div class="bottom-images">
+        <div class="scrolling-images">
+            <img src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/lma1.jpg" alt="Image 1" onclick="showArticle(0)">
+            <img src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/strees.jpg" alt="Image 2" onclick="showArticle(1)">
+            <img src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/LMA2.jpg" alt="Image 3" onclick="showArticle(2)">
+            <img src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/LMA3.jpg" alt="Image 4" onclick="showArticle(3)">
+            <img src="https://assets.onecompiler.app/42vpnsw49/42zgftkmw/lma5.png" alt="Image 5" onclick="showArticle(4)">
+        </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div class="article" id="articleModal">
+        <h2 id="articleTitle"></h2>
+        <p id="articleContent"></p>
+        <a id="readMoreButton" class="read-more-button" href="#">Lire plus</a>
+        <button onclick="closeArticle()">Fermer</button>
+    </div>
+
+    <script>
+        // Fonction pour afficher le modal avec le contenu de l'article
+        function showArticle(index) {
+            const articles = [
+                {
+                    title: "Impact de la sécheresse",
+                    content: "L'impact de la sécheresse affecte l'agriculture et les ressources en eau.",
+                    link: "https://www.example.com/impact-secheresse"
+                },
+                {
+                    title: "Gestion de l'eau",
+                    content: "La gestion de l'eau est essentielle pour maintenir un équilibre durable.",
+                    link: "https://www.example.com/gestion-eau"
+                },
+                {
+                    title: "Solutions durables",
+                    content: "Les solutions durables incluent l'irrigation intelligente et la conservation.",
+                    link: "https://www.example.com/solutions-durables"
+                },
+                {
+                    title: "Agriculture durable",
+                    content: "Les pratiques agricoles durables sont essentielles pour préserver les ressources.",
+                    link: "https://www.example.com/agriculture-durable"
+                },
+                {
+                    title: "Changements climatiques",
+                    content: "Les changements climatiques ont des conséquences sur les ressources en eau.",
+                    link: "https://www.example.com/changements-climatiques"
+                }
+            ];
+
+            const article = articles[index];
+
+            document.getElementById("articleTitle").textContent = article.title;
+            document.getElementById("articleContent").textContent = article.content;
+            document.getElementById("readMoreButton").href = article.link;
+
+            document.getElementById("articleModal").style.display = "block";
+        }
+
+        // Fonction pour fermer le modal
+        function closeArticle() {
+            document.getElementById("articleModal").style.display = "none";
+        }
+    </script>
+</body>
+</html>
